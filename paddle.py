@@ -1,5 +1,6 @@
 import pygame
 
+
 class Paddle(pygame.Rect):
     def __init__(self, vel, left, top, width, height, upKey, downKey):
         self.vel = vel
@@ -11,13 +12,13 @@ class Paddle(pygame.Rect):
         self.downKey = downKey
         super()
         
-    def movePaddle(self, disHeight):
+    def move_paddle(self, dis_height):
         keysPressed = pygame.key.get_pressed()
         
         if keysPressed[self.upKey] and self.top > 0:
             self.top -= self.vel
             print("Up key pressed")
             
-        if keysPressed[self.downKey] and self.top < disHeight - self.height:
+        if keysPressed[self.downKey] and self.top < dis_height - self.height:
             self.top += self.vel
             print("down key pressed")

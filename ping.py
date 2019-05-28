@@ -1,141 +1,151 @@
-#Imports
-import pygame, sys, random, ball, paddle
+# Imports
+import pygame 
+import sys 
+import random 
+import ball
+import paddle
 
-class Ping():
-    WHITE = 255,255,255
+
+class Ping:
+    WHITE = 255, 255, 255
     PADDLE_WIDTH = 10
     PADDLE_HEIGHT = 50
     BALL_RADIUS = 5
+
+    left_player_score = 0
+    right_player_score = 0
     
-    leftPlayerScore = 0
-    rightPlayerScore = 0
-    
-    ballYVel = random.randrange(-2, 2)
-    
-    screenObjects = []
+    ball_y_velocity = random.randrange(-2, 2)
+
     paddles = []
     balls = []
 
-    def __init__(self, disWidth, disHeight):
+    def __init__(self, dis_width, dis_height):
         pygame.init()
-    
-        self.disHeight = disHeight
-        self.disWidth = disWidth
-        self.screen = pygame.display.set_mode((self.disWidth, self.disHeight))
-        
-        self.leftPaddle = paddle.Paddle(5, 10, (self.disHeight / 2 - self.PADDLE_HEIGHT / 2), self.PADDLE_WIDTH, self.PADDLE_HEIGHT, pygame.K_w, pygame.K_s)
-        self.rightPaddle = paddle.Paddle(5, self.disWidth - 20, (self.disHeight / 2 - self.PADDLE_HEIGHT / 2), self.PADDLE_WIDTH, self.PADDLE_HEIGHT, pygame.K_UP, pygame.K_DOWN)
-        self.ball = ball.Ball(-2, self.ballYVel, self.disWidth // 2, self.disHeight // 2, self.BALL_RADIUS)
+
+        self.dis_height = dis_height
+        self.dis_width = dis_width
+        self.screen = pygame.display.set_mode((self.dis_width, self.dis_height))
+        self.left_paddle = paddle.Paddle(
+            5,
+            10,
+            (self.dis_height / 2 - self.PADDLE_HEIGHT / 2),
+            self.PADDLE_WIDTH, self.PADDLE_HEIGHT, pygame.K_w,
+            pygame.K_s)
+        self.right_paddle = paddle.Paddle(
+            5,
+            self.dis_width - 20,
+            (self.dis_height / 2 - self.PADDLE_HEIGHT / 2),
+            self.PADDLE_WIDTH,
+            self.PADDLE_HEIGHT,
+            pygame.K_UP,
+            pygame.K_DOWN)
+        self.ball = ball.Ball(
+            -2,
+            self.ball_y_velocity,
+            self.dis_width // 2,
+            self.dis_height // 2,
+            self.BALL_RADIUS)
 
         self.balls.extend([self.ball])
-        self.paddles.extend([self.leftPaddle, self.rightPaddle])
-        
+        self.paddles.extend([self.left_paddle, self.right_paddle])
+
         pygame.font.init()
-        self.myfont = pygame.font.SysFont('Arial', 30)
-                
-    def drawPitch(self):
-        leftGutter = pygame.draw.line(self.screen, self.WHITE, (20, 0), (20, self.disHeight))
-        rightGutter = pygame.draw.line(self.screen, self.WHITE, (self.disWidth - 20, 0), (self.disWidth - 20, self.disHeight))
-        centralDivide = pygame.draw.line(self.screen, self.WHITE, (self.disWidth / 2, 0), (self.disWidth / 2, self.disHeight))
-        
-    #refactor to take a list of objects to draw    
-    def drawBalls(self, balls):
+        self.score_font = pygame.font.SysFont('Arial', 30)
+
+    def draw_pitch(self):
+        pygame.draw.line(self.screen, self.WHITE, (20, 0), (20, self.dis_height))
+        pygame.draw.line(self.screen, self.WHITE, (self.dis_width - 20, 0), (self.dis_width - 20, self.dis_height))
+        pygame.draw.line(self.screen, self.WHITE, (self.dis_width / 2, 0), (self.dis_width / 2, self.dis_height))
+
+    # refactor to take a list of objects to draw
+    def draw_balls(self, balls):
         for ball in balls:
             pygame.draw.circle(self.screen, self.WHITE, (ball.xPos, ball.yPos), ball.radius)
-        
-    def drawPaddles(self, paddles):
+
+    def draw_paddles(self, paddles):
         for paddle in paddles:
             pygame.draw.rect(self.screen, self.WHITE, paddle)
-        
-    def wallCollisionCheck(self, ball):
-        if ball.yPos < 0 or ball.yPos > self.disHeight:
+
+    def wall_collision_check(self, ball):
+        if ball.yPos < 0 or ball.yPos > self.dis_height:
             ball.yVel = -ball.yVel
-        
-    def paddleCollisionCheck(self, ball, leftPaddle, rightPaddle):
-        if leftPaddle.collidepoint(ball.xPos - ball.radius, ball.yPos):
+
+    def paddle_collision_check(self, ball, left_paddle, right_paddle):
+        if left_paddle.collidepoint(ball.xPos - ball.radius, ball.yPos):
             ball.xVel = -ball.xVel
             ball.yVel = random.randrange(-2, 2)
-        
-        if rightPaddle.collidepoint(ball.xPos + ball.radius, ball.yPos):
+
+        if right_paddle.collidepoint(ball.xPos + ball.radius, ball.yPos):
             ball.xVel = -ball.xVel
             ball.yVel = random.randrange(-2, 2)
-        
-    def gutterBall(self, ball):
+
+    def gutter_ball(self, ball):
         if ball.xPos < 0:
-            ball.xPos = self.disWidth // 2
-            ball.yPos = self.disHeight // 2
+            ball.xPos = self.dis_width // 2
+            ball.yPos = self.dis_height // 2
             ball.yVel = random.randrange(-2, 2)
-            self.rightPlayerScore += 1
-            
-        if ball.xPos > self.disWidth:
-            ball.xPos = self.disWidth // 2
-            ball.yPos = self.disHeight // 2
+            self.right_player_score += 1
+
+        if ball.xPos > self.dis_width:
+            ball.xPos = self.dis_width // 2
+            ball.yPos = self.dis_height // 2
             ball.yVel = random.randrange(-2, 2)
-            self.leftPlayerScore += 1
-        
-    def checkEvents(self):
+            self.left_player_score += 1
+
+    def check_events(self):
         pressed = pygame.key.get_pressed()
-            
+
         if pressed[pygame.K_ESCAPE]:
             print("exit!!!!")
             sys.exit()
-    
-        for event in pygame.event.get():        
-            #for debugging
+
+        for event in pygame.event.get():
+            # for debugging
             print(event)
-            
-            if event.type == (pygame.QUIT):
+
+            if event.type == pygame.QUIT:
                 sys.exit()
-            
-    def gameLoop(self):
+
+    def game_loop(self):
         while True:
-            self.checkEvents()
-            
-            #clear the screen before redraw
+            self.check_events()
+
+            # clear the screen before redraw
             self.screen.fill((0, 0, 0))
-            
-            #check for collisions
-            self.wallCollisionCheck(self.ball)
-            self.paddleCollisionCheck(self.ball, self.leftPaddle, self.rightPaddle)
-            self.gutterBall(self.ball)
-            
-            #Update the gameObjects
+
+            # check for collisions
+            self.wall_collision_check(self.ball)
+            self.paddle_collision_check(self.ball, self.left_paddle, self.right_paddle)
+            self.gutter_ball(self.ball)
+
+            # Update the gameObjects
             self.ball.moveBall()
-            self.leftPaddle.movePaddle(self.disHeight)
-            self.rightPaddle.movePaddle(self.disHeight)
-                    
-            #draw the game objects
-            self.drawPitch()
-            self.drawBalls(self.balls)
-            self.drawPaddles(self.paddles)
-            
-            leftPlayerScoreText = self.myfont.render(str(self.leftPlayerScore), False, self.WHITE)
-            rightPlayerScoreText = self.myfont.render(str(self.rightPlayerScore), False, self.WHITE)
-            self.screen.blit(leftPlayerScoreText,(self.disWidth / 2 - 30, 50))
-            self.screen.blit(rightPlayerScoreText,(self.disWidth / 2 + 30, 50))
+            self.left_paddle.move_paddle(self.dis_height)
+            self.right_paddle.move_paddle(self.dis_height)
 
-            #redraw the display
+            # draw the game objects
+            self.draw_pitch()
+            self.draw_balls(self.balls)
+            self.draw_paddles(self.paddles)
+
+            left_player_score_text = self.score_font.render(str(self.left_player_score), False, self.WHITE)
+            right_player_score_text = self.score_font.render(str(self.right_player_score), False, self.WHITE)
+            self.screen.blit(left_player_score_text, (self.dis_width / 2 - 30, 50))
+            self.screen.blit(right_player_score_text, (self.dis_width / 2 + 30, 50))
+
+            # redraw the display
             pygame.display.update()
-            
-            #Insert 10ms delay
+
+            # Insert 10ms delay
             pygame.time.delay(10)
-    
-        
-##################################################################       
-        
 
 
-##################################################################
-
-
-            
-##################################################################           
-
-class Player():
-    def __init__():
+class Player:
+    def __init__(self):
         pass
 
-##################################################################            
+
 if __name__ == '__main__':
-    ping = Ping(640,480)
-    ping.gameLoop()
+    ping = Ping(640, 480)
+    ping.game_loop()
