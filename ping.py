@@ -1,5 +1,5 @@
 #Imports
-import pygame, sys, random
+import pygame, sys, random, ball, paddle
 
 class Ping():
     WHITE = 255,255,255
@@ -23,9 +23,9 @@ class Ping():
         self.disWidth = disWidth
         self.screen = pygame.display.set_mode((self.disWidth, self.disHeight))
         
-        self.leftPaddle = Paddle(5, 10, (self.disHeight / 2 - self.PADDLE_HEIGHT / 2), self.PADDLE_WIDTH, self.PADDLE_HEIGHT, pygame.K_w, pygame.K_s)
-        self.rightPaddle = Paddle(5, self.disWidth - 20, (self.disHeight / 2 - self.PADDLE_HEIGHT / 2), self.PADDLE_WIDTH, self.PADDLE_HEIGHT, pygame.K_UP, pygame.K_DOWN)
-        self.ball = Ball(-2, self.ballYVel, self.disWidth // 2, self.disHeight // 2, self.BALL_RADIUS)
+        self.leftPaddle = paddle.Paddle(5, 10, (self.disHeight / 2 - self.PADDLE_HEIGHT / 2), self.PADDLE_WIDTH, self.PADDLE_HEIGHT, pygame.K_w, pygame.K_s)
+        self.rightPaddle = paddle.Paddle(5, self.disWidth - 20, (self.disHeight / 2 - self.PADDLE_HEIGHT / 2), self.PADDLE_WIDTH, self.PADDLE_HEIGHT, pygame.K_UP, pygame.K_DOWN)
+        self.ball = ball.Ball(-2, self.ballYVel, self.disWidth // 2, self.disHeight // 2, self.BALL_RADIUS)
 
         self.balls.extend([self.ball])
         self.paddles.extend([self.leftPaddle, self.rightPaddle])
@@ -123,41 +123,11 @@ class Ping():
         
 ##################################################################       
         
-class Ball():
-    def __init__(self, xVel, yVel, xPos, yPos, radius):
-        self.xVel = xVel
-        self.yVel = yVel
-        self.xPos = xPos
-        self.yPos = yPos
-        self.radius = radius
-        
-    def moveBall(self):
-        self.xPos += self.xVel
-        self.yPos += self.yVel
+
 
 ##################################################################
 
-class Paddle(pygame.Rect):
-    def __init__(self, vel, left, top, width, height, upKey, downKey):
-        self.vel = vel
-        self.top = top
-        self.left = left
-        self.width = width
-        self.height = height
-        self.upKey = upKey
-        self.downKey = downKey
-        super()
-        
-    def movePaddle(self, disHeight):
-        keysPressed = pygame.key.get_pressed()
-        
-        if keysPressed[self.upKey] and self.top > 0:
-            self.top -= self.vel
-            print("Up key pressed")
-            
-        if keysPressed[self.downKey] and self.top < disHeight - self.height:
-            self.top += self.vel
-            print("down key pressed")
+
             
 ##################################################################           
 
